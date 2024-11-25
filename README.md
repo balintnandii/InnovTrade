@@ -1,2 +1,2 @@
-# innovrade
+# innovtrade
 InnovTrade weboldala

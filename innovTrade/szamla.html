@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Számla - InnovTrade</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+        .szamla-container {
+            max-width: 600px;
+            background: white;
+            padding: 20px;
+            margin: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .szamla-fejlec {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .szamla-fejlec img {
+            max-width: 100px;
+        }
+        .szamla-fejlec h1 {
+            font-size: 24px;
+            color: #333;
+        }
+        .szamla-adatok, .tetel-lista {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .szamla-adatok td {
+            padding: 10px;
+        }
+        .tetel-lista th, .tetel-lista td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+        .tetel-lista th {
+            background-color: #2a9d8f;
+            color: white;
+        }
+        .osszegzes {
+            text-align: right;
+            margin-top: 20px;
+        }
+        .gomb-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .gomb-container button {
+            background-color: #2a9d8f;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .gomb-container button:hover {
+            background-color: #21867a;
+        }
+    </style>
+</head>
+<body>
+    <div class="szamla-container">
+        <div class="szamla-fejlec">
+            <img src="kepek/logo.png" alt="InnovTrade Logó">
+            <h1>Számla</h1>
+        </div>
+        <table class="szamla-adatok">
+            <tr>
+                <td><strong>Számlázási név:</strong> <span id="felhasznaloNev">Betöltés...</span></td>
+                <td><strong>Dátum:</strong> <span id="szamlaDatum">Betöltés...</span></td>
+            </tr>
+            <tr>
+                <td><strong>Email:</strong> <span id="felhasznaloEmail">Betöltés...</span></td>
+                <td><strong>Számla sorszáma:</strong> #<span id="szamlaSorszam"></span></td>
+            </tr>
+        </table>
+        <table class="tetel-lista">
+            <tr>
+                <th>Termék</th>
+                <th>Mennyiség (nap)33</th>
+                <th>Egységár5</th>
+                <th>Összeg</th>
+            </tr>
+            <tbody id="szamlaKosar"></tbody>
+        </table>
+        <div class="osszegzes">
+            <h3>Teljes összeg: <strong><span id="szamlaOsszeg">Betöltés...</span> Ft</strong></h3>
+        </div>
+        <div class="gomb-container">
+            <button onclick="ablakNyomtatas()">Számla nyomtatása</button>
+        </div>
+    </div>
+
+    <script>
+        function ablakNyomtatas() {
+            window.print();
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            let felhasznaloNev = sessionStorage.getItem("felhasznaloNev") || "Nincs megadva";
+            let felhasznaloEmail = sessionStorage.getItem("felhasznaloEmail") || "Nincs megadva";
+            let datum = sessionStorage.getItem("szamla_datum") || "Nincs megadva";
+            let napok = sessionStorage.getItem("szamla_napok") || 1;
+            let autok = sessionStorage.getItem("szamla_autok") ? sessionStorage.getItem("szamla_autok").split(", ") : [];
+
+            document.getElementById("felhasznaloNev").innerText = felhasznaloNev;
+            document.getElementById("felhasznaloEmail").innerText = felhasznaloEmail;
+            document.getElementById("szamlaDatum").innerText = datum;
+            document.getElementById("szamlaSorszam").innerText = new Date().getTime();
+
+            let szamlaKosarTabla = document.getElementById("szamlaKosar");
+            let osszeg = 0;
+
+            autok.forEach(autonev => {
+                let ar = sessionStorage.getItem(`ar_${autonev}`) || 0;
+                let teljesAr = ar * napok;
+                osszeg += teljesAr;
+
+                let sor = document.createElement("tr");
+                sor.innerHTML = `
+                    <td>${autonev}</td>
+                    <td>${napok} nap</td>
+                    <td>${ar} Ft</td>
+                    <td>${teljesAr} Ft</td>
+                `;
+                szamlaKosarTabla.appendChild(sor);
+            });
+
+            document.getElementById("szamlaOsszeg").innerText = osszeg;
+        });
+    </script>
+</body>
+</html>
